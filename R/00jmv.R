@@ -23,5 +23,5 @@
         `type`="software", 
         `author`="Mathias Harrer and Pim Cuijpers and Toshi Furukawa and David Daniel Ebert", 
         `year`=2019, 
-        `title`="dmetar: Companion R Package For The Guide 'Doing Meta-Analysis in R", 
+        `title`="dmetar: Companion R Package For The Guide Doing Meta-Analysis in R", 
         `url`="http://dmetar.protectlab.org"))
