@@ -53,6 +53,28 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             OUTData$setState(OUTResults)
             
           }
+          
+          if (baujat == TRUE | InfluenceCharacteristics == TRUE | ForestEffectSize == TRUE | ForestI2 == TRUE) {
+            infResults <- dmetar::InfluenceAnalysis(OverallMeta)
+            self$results$infText$setContent(infResults)
+            
+            if (baujat == TRUE) {
+            baujatData <- self$results$baujatPlot
+            baujatData$setState(infResults)}
+            
+            if (InfluenceCharacteristics == TRUE) {
+              InfluenceCharacteristicsData <- self$results$infPlot
+              InfluenceCharacteristicsData$setState(infResults)}
+            
+            if (ForestEffectSize == TRUE) {
+              ForestEffectSizeData <- self$results$ForestEffectSizePlot
+              ForestEffectSizeData$setState(infResults)}
+            
+            if (ForestI2 == TRUE) {
+              ForestI2Data <- self$results$ForestI2Plot
+              ForestI2Data$setState(infResults)}
+            
+          }
         },
         .plot=function(metamodel, ...) {
           
@@ -74,6 +96,30 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           if (self$options$OUT == TRUE) {
           dmetar::forest.find.outliers(OUTData$state, col.diamond = "black", col.subgroup ="gray30")
           TRUE
+          } else {FALSE}
+        },
+        .baujatPlot=function(baujatData, ...) {
+          if (self$options$baujat == TRUE) {
+            dmetar::plot.InfluenceAnalysis(baujatData$state, "baujat")
+            TRUE
+          } else {FALSE}
+        },
+        .infPlot=function(InfluenceCharacteristicsData, ...) {
+          if (self$options$InfluenceCharacteristics == TRUE) {
+            dmetar::plot.InfluenceAnalysis(InfluenceCharacteristicsData$state, "influence")
+            TRUE
+          } else {FALSE}
+        },
+        .ForestEffectSizePlot=function(ForestEffectSizeData, ...) {
+          if (self$options$ForestEffectSize == TRUE) {
+            dmetar::plot.InfluenceAnalysis(ForestEffectSizeData$state, "ES")
+            TRUE
+          } else {FALSE}
+        },
+        .ForestI2Plot=function(ForestI2Data, ...) {
+          if (self$options$ForestI2 == TRUE) {
+            dmetar::plot.InfluenceAnalysis(ForestI2Data$state, "I2")
+            TRUE
           } else {FALSE}
         }
         

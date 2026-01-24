@@ -166,7 +166,12 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         LOOText = function() private$.items[["LOOText"]],
         LOOPlot = function() private$.items[["LOOPlot"]],
         OUTText = function() private$.items[["OUTText"]],
-        OUTPlot = function() private$.items[["OUTPlot"]]),
+        OUTPlot = function() private$.items[["OUTPlot"]],
+        infText = function() private$.items[["infText"]],
+        baujatPlot = function() private$.items[["baujatPlot"]],
+        infPlot = function() private$.items[["infPlot"]],
+        ForestEffectSizePlot = function() private$.items[["ForestEffectSizePlot"]],
+        ForestI2Plot = function() private$.items[["ForestI2Plot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -286,7 +291,104 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "common"),
                 refs=list(
                     "dmetarPackage",
-                    "metaPackage")))}))
+                    "metaPackage")))
+            self$add(jmvcore::Preformatted$new(
+                options=options,
+                name="infText",
+                title="Influence Analysis",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="baujatPlot",
+                title="baujat Plot",
+                width=800,
+                height=1000,
+                renderFun=".baujatPlot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="infPlot",
+                title="Influence Characteristics Plot",
+                width=800,
+                height=1000,
+                renderFun=".infPlot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="ForestEffectSizePlot",
+                title="Forest Plot Sorted By Effect Size",
+                width=800,
+                height=1000,
+                renderFun=".ForestEffectSizePlot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="ForestI2Plot",
+                title="Forest Plot Sorted By between-study heterogeneity",
+                width=800,
+                height=1000,
+                renderFun=".ForestI2Plot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage")))}))
 
 mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "mpcontBase",
@@ -339,6 +441,11 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   \code{results$LOOPlot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$OUTText} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$OUTPlot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$infText} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$baujatPlot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$infPlot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$ForestEffectSizePlot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$ForestI2Plot} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' @export

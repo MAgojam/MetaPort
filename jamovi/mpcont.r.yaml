@@ -116,4 +116,101 @@ items:
       refs:
         - dmetarPackage
         - metaPackage
+
+    - name:  infText
+      title: Influence Analysis
+      type:  Preformatted
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+        
+    - name:  baujatPlot
+      title: baujat Plot
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .baujatPlot
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+
+    - name:  infPlot
+      title: Influence Characteristics Plot
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .infPlot
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+
+    - name:  ForestEffectSizePlot
+      title: Forest Plot Sorted By Effect Size
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .ForestEffectSizePlot
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+
+    - name:  ForestI2Plot
+      title: Forest Plot Sorted By between-study heterogeneity
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .ForestI2Plot
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
 ...
