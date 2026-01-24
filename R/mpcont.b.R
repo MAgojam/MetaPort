@@ -34,7 +34,7 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           # sensitivity analysis
           LOO <- self$options$LOO
           OUT <- self$options$OUT
-          baujat <- self$options$OUT
+          baujat <- self$options$baujat
           InfluenceCharacteristics <- self$options$InfluenceCharacteristics
           ForestEffectSize <- self$options$ForestEffectSize
           ForestI2 <- self$options$ForestI2
@@ -45,7 +45,14 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           LOOData <- self$results$LOOPlot
           LOOData$setState(LOOResults)
           }
-
+          
+          if (OUT == TRUE) {
+            OUTResults <- dmetar::find.outliers(OverallMeta)
+            self$results$OUTText$setContent(OUTResults)
+            OUTData <- self$results$OUTPlot
+            OUTData$setState(OUTResults)
+            
+          }
         },
         .plot=function(metamodel, ...) {
           
@@ -57,9 +64,17 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           TRUE
         },
         .LOOPlot=function(LOOData, ...) {
+          if (self$options$LOO == TRUE) {
           meta::forest(LOOData$state, rightcols = c("effect","ci","tau2","I2"),
                        col.diamond = "black",col.subgroup ="gray30")
           TRUE
+          } else {FALSE}
+        },
+        .OUTPlot=function(OUTData, ...) {
+          if (self$options$OUT == TRUE) {
+          dmetar::forest.find.outliers(OUTData$state, col.diamond = "black", col.subgroup ="gray30")
+          TRUE
+          } else {FALSE}
         }
         
         )
