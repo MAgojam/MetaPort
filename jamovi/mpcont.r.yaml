@@ -7,24 +7,113 @@ items:
     - name:  text
       title: Results for Overall meta analysis
       type:  Preformatted
-
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - metaPackage
+        
     - name: plot
       title: Forest Plot
       type: Image
       width:  800
       height: 1000
       renderFun: .plot
-
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - metaPackage
+        
     - name:  LOOText
       title: leave-one-out Analysis
       type:  Preformatted
-
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - metaPackage
+        
     - name:  LOOPlot
       title: leave-one-out Plot
       type:  Image
       width:  800
       height: 1000
       renderFun: .LOOPlot
-
-
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - metaPackage
+        
+    - name:  OUTText
+      title: Outliers Analysis
+      type:  Preformatted
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+        - metaPackage
+        
+    - name:  OUTPlot
+      title: Outliers Plot
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .OUTPlot
+      clearWith:
+        - mean.e
+        - sd.e
+        - n.e
+        - mean.c
+        - sd.c
+        - n.c
+        - id
+        - sm
+        - random
+        - common
+      refs:
+        - dmetarPackage
+        - metaPackage
 ...

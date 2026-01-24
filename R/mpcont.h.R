@@ -164,7 +164,9 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         text = function() private$.items[["text"]],
         plot = function() private$.items[["plot"]],
         LOOText = function() private$.items[["LOOText"]],
-        LOOPlot = function() private$.items[["LOOPlot"]]),
+        LOOPlot = function() private$.items[["LOOPlot"]],
+        OUTText = function() private$.items[["OUTText"]],
+        OUTPlot = function() private$.items[["OUTPlot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -175,25 +177,116 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Preformatted$new(
                 options=options,
                 name="text",
-                title="Results for Overall meta analysis"))
+                title="Results for Overall meta analysis",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "metaPackage")))
             self$add(jmvcore::Image$new(
                 options=options,
                 name="plot",
                 title="Forest Plot",
                 width=800,
                 height=1000,
-                renderFun=".plot"))
+                renderFun=".plot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "metaPackage")))
             self$add(jmvcore::Preformatted$new(
                 options=options,
                 name="LOOText",
-                title="leave-one-out Analysis"))
+                title="leave-one-out Analysis",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "metaPackage")))
             self$add(jmvcore::Image$new(
                 options=options,
                 name="LOOPlot",
                 title="leave-one-out Plot",
                 width=800,
                 height=1000,
-                renderFun=".LOOPlot"))}))
+                renderFun=".LOOPlot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "metaPackage")))
+            self$add(jmvcore::Preformatted$new(
+                options=options,
+                name="OUTText",
+                title="Outliers Analysis",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage",
+                    "metaPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="OUTPlot",
+                title="Outliers Plot",
+                width=800,
+                height=1000,
+                renderFun=".OUTPlot",
+                clearWith=list(
+                    "mean.e",
+                    "sd.e",
+                    "n.e",
+                    "mean.c",
+                    "sd.c",
+                    "n.c",
+                    "id",
+                    "sm",
+                    "random",
+                    "common"),
+                refs=list(
+                    "dmetarPackage",
+                    "metaPackage")))}))
 
 mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "mpcontBase",
@@ -244,6 +337,8 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   \code{results$plot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$LOOText} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$LOOPlot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$OUTText} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$OUTPlot} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' @export
