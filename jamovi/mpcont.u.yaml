@@ -1,6 +1,6 @@
 title: Meta-analysis of continuous outcome data
 name: mpcont
-jus: '3.0'
+jus: "3.0"
 stage: 0
 compilerMode: tame
 children:
@@ -9,83 +9,103 @@ children:
     stretchFactor: 1
     children:
       - type: TargetLayoutBox
-        label: Mean in experimental group
+        label: Study Labels
         children:
           - type: VariablesListBox
-            name: mean.e
+            name: studyLabel
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Standard deviation in experimental group
+        label: Mean (Experimental)
         children:
           - type: VariablesListBox
-            name: sd.e
+            name: meanE
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Total in experimental group
+        label: SD (Experimental)
         children:
           - type: VariablesListBox
-            name: n.e
+            name: sdE
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Mean in control group
+        label: Sample Size (Experimental)
         children:
           - type: VariablesListBox
-            name: mean.c
+            name: nE
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Standard deviation in control group
+        label: Mean (Control)
         children:
           - type: VariablesListBox
-            name: sd.c
+            name: meanC
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Total in control group
+        label: SD (Control)
         children:
           - type: VariablesListBox
-            name: n.c
+            name: sdC
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: study labels
+        label: Sample Size (Control)
         children:
           - type: VariablesListBox
-            name: id
+            name: nC
             maxItemCount: 1
             isTarget: true
-  - type: CollapseBox
-    label: Overall Meta-Analysis
-    collapsed: true
-    stretchFactor: 1
+
+  - type: LayoutBox
+    margin: large
     children:
-      - type: LayoutBox
-        margin: large
+      - type: Label
+        label: Meta-Analysis Model
         children:
-          - type: ComboBox
-            name: sm
-      - type: LayoutBox
-        margin: large
-        children:
-          - type: CheckBox
-            name: random
-          - type: CheckBox
-            name: common
-      - type: LayoutBox
-        margin: large
-        children:
-          - type: TextBox
-            name: label.e
-            format: string
-      - type: LayoutBox
-        margin: large
-        children:
-          - type: TextBox
-            name: label.c
-            format: string
+          - type: LayoutBox
+            margin: large
+            children:
+              - type: ComboBox
+                name: sm
+              - type: ComboBox
+                name: methodSmd
+          - type: LayoutBox
+            margin: large
+            children:
+              - type: Label
+                label: Model Options
+                children:
+                  - type: CheckBox
+                    name: common
+                  - type: CheckBox
+                    name: random
+                    children:
+                      - type: ComboBox
+                        name: methodTau
+          - type: LayoutBox
+            margin: large
+            children:
+              - type: CheckBox
+                name: prediction
+          - type: LayoutBox
+            margin: large
+            children:
+              - type: TextBox
+                name: confidenceLevel
+                format: number
+              - type: Label
+                label: Group Labels
+                children:
+                  - type: TextBox
+                    name: groupLabelE
+                    format: string
+                    width: large
+                  - type: TextBox
+                    name: groupLabelC
+                    format: string
+                    width: large
   - type: CollapseBox
     label: Sensitivity and Influence Analysis
     collapsed: true

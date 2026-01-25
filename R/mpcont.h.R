@@ -6,18 +6,22 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     inherit = jmvcore::Options,
     public = list(
         initialize = function(
-            mean.e = NULL,
-            sd.e = NULL,
-            n.e = NULL,
-            mean.c = NULL,
-            sd.c = NULL,
-            n.c = NULL,
-            id = NULL,
-            sm = "MD",
+            studyLabel = NULL,
+            meanE = NULL,
+            sdE = NULL,
+            nE = NULL,
+            meanC = NULL,
+            sdC = NULL,
+            nC = NULL,
+            sm = "md",
+            methodSmd = "hedges",
             random = TRUE,
             common = TRUE,
-            label.e = NULL,
-            label.c = NULL,
+            methodTau = "reml",
+            prediction = FALSE,
+            confidenceLevel = 0.95,
+            groupLabelE = "Experimental",
+            groupLabelC = "Control",
             LOO = FALSE,
             OUT = FALSE,
             baujat = FALSE,
@@ -31,34 +35,71 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 requiresData=TRUE,
                 ...)
 
-            private$..mean.e <- jmvcore::OptionVariable$new(
-                "mean.e",
-                mean.e)
-            private$..sd.e <- jmvcore::OptionVariable$new(
-                "sd.e",
-                sd.e)
-            private$..n.e <- jmvcore::OptionVariable$new(
-                "n.e",
-                n.e)
-            private$..mean.c <- jmvcore::OptionVariable$new(
-                "mean.c",
-                mean.c)
-            private$..sd.c <- jmvcore::OptionVariable$new(
-                "sd.c",
-                sd.c)
-            private$..n.c <- jmvcore::OptionVariable$new(
-                "n.c",
-                n.c)
-            private$..id <- jmvcore::OptionVariable$new(
-                "id",
-                id)
+            private$..studyLabel <- jmvcore::OptionVariable$new(
+                "studyLabel",
+                studyLabel,
+                suggested=list(
+                    "nominal",
+                    "ordinal",
+                    "id"))
+            private$..meanE <- jmvcore::OptionVariable$new(
+                "meanE",
+                meanE,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
+            private$..sdE <- jmvcore::OptionVariable$new(
+                "sdE",
+                sdE,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
+            private$..nE <- jmvcore::OptionVariable$new(
+                "nE",
+                nE,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
+            private$..meanC <- jmvcore::OptionVariable$new(
+                "meanC",
+                meanC,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
+            private$..sdC <- jmvcore::OptionVariable$new(
+                "sdC",
+                sdC,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
+            private$..nC <- jmvcore::OptionVariable$new(
+                "nC",
+                nC,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
             private$..sm <- jmvcore::OptionList$new(
                 "sm",
                 sm,
                 options=list(
-                    "MD",
-                    "SMD"),
-                default="MD")
+                    "md",
+                    "smd",
+                    "rom"),
+                default="md")
+            private$..methodSmd <- jmvcore::OptionList$new(
+                "methodSmd",
+                methodSmd,
+                options=list(
+                    "hedges",
+                    "cohen",
+                    "glass"),
+                default="hedges")
             private$..random <- jmvcore::OptionBool$new(
                 "random",
                 random,
@@ -67,12 +108,35 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "common",
                 common,
                 default=TRUE)
-            private$..label.e <- jmvcore::OptionString$new(
-                "label.e",
-                label.e)
-            private$..label.c <- jmvcore::OptionString$new(
-                "label.c",
-                label.c)
+            private$..methodTau <- jmvcore::OptionList$new(
+                "methodTau",
+                methodTau,
+                options=list(
+                    "reml",
+                    "dl",
+                    "pm",
+                    "ml",
+                    "hs",
+                    "sj",
+                    "he",
+                    "eb"),
+                default="reml")
+            private$..prediction <- jmvcore::OptionBool$new(
+                "prediction",
+                prediction,
+                default=FALSE)
+            private$..confidenceLevel <- jmvcore::OptionNumber$new(
+                "confidenceLevel",
+                confidenceLevel,
+                default=0.95)
+            private$..groupLabelE <- jmvcore::OptionString$new(
+                "groupLabelE",
+                groupLabelE,
+                default="Experimental")
+            private$..groupLabelC <- jmvcore::OptionString$new(
+                "groupLabelC",
+                groupLabelC,
+                default="Control")
             private$..LOO <- jmvcore::OptionBool$new(
                 "LOO",
                 LOO,
@@ -98,18 +162,22 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 ForestI2,
                 default=FALSE)
 
-            self$.addOption(private$..mean.e)
-            self$.addOption(private$..sd.e)
-            self$.addOption(private$..n.e)
-            self$.addOption(private$..mean.c)
-            self$.addOption(private$..sd.c)
-            self$.addOption(private$..n.c)
-            self$.addOption(private$..id)
+            self$.addOption(private$..studyLabel)
+            self$.addOption(private$..meanE)
+            self$.addOption(private$..sdE)
+            self$.addOption(private$..nE)
+            self$.addOption(private$..meanC)
+            self$.addOption(private$..sdC)
+            self$.addOption(private$..nC)
             self$.addOption(private$..sm)
+            self$.addOption(private$..methodSmd)
             self$.addOption(private$..random)
             self$.addOption(private$..common)
-            self$.addOption(private$..label.e)
-            self$.addOption(private$..label.c)
+            self$.addOption(private$..methodTau)
+            self$.addOption(private$..prediction)
+            self$.addOption(private$..confidenceLevel)
+            self$.addOption(private$..groupLabelE)
+            self$.addOption(private$..groupLabelC)
             self$.addOption(private$..LOO)
             self$.addOption(private$..OUT)
             self$.addOption(private$..baujat)
@@ -118,18 +186,22 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..ForestI2)
         }),
     active = list(
-        mean.e = function() private$..mean.e$value,
-        sd.e = function() private$..sd.e$value,
-        n.e = function() private$..n.e$value,
-        mean.c = function() private$..mean.c$value,
-        sd.c = function() private$..sd.c$value,
-        n.c = function() private$..n.c$value,
-        id = function() private$..id$value,
+        studyLabel = function() private$..studyLabel$value,
+        meanE = function() private$..meanE$value,
+        sdE = function() private$..sdE$value,
+        nE = function() private$..nE$value,
+        meanC = function() private$..meanC$value,
+        sdC = function() private$..sdC$value,
+        nC = function() private$..nC$value,
         sm = function() private$..sm$value,
+        methodSmd = function() private$..methodSmd$value,
         random = function() private$..random$value,
         common = function() private$..common$value,
-        label.e = function() private$..label.e$value,
-        label.c = function() private$..label.c$value,
+        methodTau = function() private$..methodTau$value,
+        prediction = function() private$..prediction$value,
+        confidenceLevel = function() private$..confidenceLevel$value,
+        groupLabelE = function() private$..groupLabelE$value,
+        groupLabelC = function() private$..groupLabelC$value,
         LOO = function() private$..LOO$value,
         OUT = function() private$..OUT$value,
         baujat = function() private$..baujat$value,
@@ -137,18 +209,22 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ForestEffectSize = function() private$..ForestEffectSize$value,
         ForestI2 = function() private$..ForestI2$value),
     private = list(
-        ..mean.e = NA,
-        ..sd.e = NA,
-        ..n.e = NA,
-        ..mean.c = NA,
-        ..sd.c = NA,
-        ..n.c = NA,
-        ..id = NA,
+        ..studyLabel = NA,
+        ..meanE = NA,
+        ..sdE = NA,
+        ..nE = NA,
+        ..meanC = NA,
+        ..sdC = NA,
+        ..nC = NA,
         ..sm = NA,
+        ..methodSmd = NA,
         ..random = NA,
         ..common = NA,
-        ..label.e = NA,
-        ..label.c = NA,
+        ..methodTau = NA,
+        ..prediction = NA,
+        ..confidenceLevel = NA,
+        ..groupLabelE = NA,
+        ..groupLabelC = NA,
         ..LOO = NA,
         ..OUT = NA,
         ..baujat = NA,
@@ -184,16 +260,22 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="text",
                 title="Results for Overall meta analysis",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "prediction",
+                    "confidenceLevel"),
                 refs=list(
                     "metaPackage")))
             self$add(jmvcore::Image$new(
@@ -204,16 +286,22 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".plot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "prediction",
+                    "confidenceLevel"),
                 refs=list(
                     "metaPackage")))
             self$add(jmvcore::Preformatted$new(
@@ -221,16 +309,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="LOOText",
                 title="leave-one-out Analysis",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "metaPackage")))
             self$add(jmvcore::Image$new(
@@ -241,16 +334,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".LOOPlot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "metaPackage")))
             self$add(jmvcore::Preformatted$new(
@@ -258,16 +356,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="OUTText",
                 title="Outliers Analysis",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage",
                     "metaPackage")))
@@ -279,16 +382,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".OUTPlot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage",
                     "metaPackage")))
@@ -297,16 +405,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="infText",
                 title="Influence Analysis",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage")))
             self$add(jmvcore::Image$new(
@@ -317,16 +430,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".baujatPlot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage")))
             self$add(jmvcore::Image$new(
@@ -337,16 +455,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".infPlot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage")))
             self$add(jmvcore::Image$new(
@@ -357,16 +480,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".ForestEffectSizePlot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage")))
             self$add(jmvcore::Image$new(
@@ -377,16 +505,21 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=1000,
                 renderFun=".ForestI2Plot",
                 clearWith=list(
-                    "mean.e",
-                    "sd.e",
-                    "n.e",
-                    "mean.c",
-                    "sd.c",
-                    "n.c",
-                    "id",
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
                     "sm",
+                    "methodTau",
+                    "methodSmd",
                     "random",
-                    "common"),
+                    "common",
+                    "confidenceLevel"),
                 refs=list(
                     "dmetarPackage")))}))
 
@@ -415,18 +548,22 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'
 #' 
 #' @param data .
-#' @param mean.e .
-#' @param sd.e .
-#' @param n.e .
-#' @param mean.c .
-#' @param sd.c .
-#' @param n.c .
-#' @param id .
+#' @param studyLabel .
+#' @param meanE .
+#' @param sdE .
+#' @param nE .
+#' @param meanC .
+#' @param sdC .
+#' @param nC .
 #' @param sm .
+#' @param methodSmd .
 #' @param random .
 #' @param common .
-#' @param label.e .
-#' @param label.c .
+#' @param methodTau .
+#' @param prediction .
+#' @param confidenceLevel .
+#' @param groupLabelE .
+#' @param groupLabelC .
 #' @param LOO .
 #' @param OUT .
 #' @param baujat .
@@ -451,18 +588,22 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @export
 mpcont <- function(
     data,
-    mean.e,
-    sd.e,
-    n.e,
-    mean.c,
-    sd.c,
-    n.c,
-    id,
-    sm = "MD",
+    studyLabel,
+    meanE,
+    sdE,
+    nE,
+    meanC,
+    sdC,
+    nC,
+    sm = "md",
+    methodSmd = "hedges",
     random = TRUE,
     common = TRUE,
-    label.e,
-    label.c,
+    methodTau = "reml",
+    prediction = FALSE,
+    confidenceLevel = 0.95,
+    groupLabelE = "Experimental",
+    groupLabelC = "Control",
     LOO = FALSE,
     OUT = FALSE,
     baujat = FALSE,
@@ -473,38 +614,42 @@ mpcont <- function(
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("mpcont requires jmvcore to be installed (restart may be required)")
 
-    if ( ! missing(mean.e)) mean.e <- jmvcore::resolveQuo(jmvcore::enquo(mean.e))
-    if ( ! missing(sd.e)) sd.e <- jmvcore::resolveQuo(jmvcore::enquo(sd.e))
-    if ( ! missing(n.e)) n.e <- jmvcore::resolveQuo(jmvcore::enquo(n.e))
-    if ( ! missing(mean.c)) mean.c <- jmvcore::resolveQuo(jmvcore::enquo(mean.c))
-    if ( ! missing(sd.c)) sd.c <- jmvcore::resolveQuo(jmvcore::enquo(sd.c))
-    if ( ! missing(n.c)) n.c <- jmvcore::resolveQuo(jmvcore::enquo(n.c))
-    if ( ! missing(id)) id <- jmvcore::resolveQuo(jmvcore::enquo(id))
+    if ( ! missing(studyLabel)) studyLabel <- jmvcore::resolveQuo(jmvcore::enquo(studyLabel))
+    if ( ! missing(meanE)) meanE <- jmvcore::resolveQuo(jmvcore::enquo(meanE))
+    if ( ! missing(sdE)) sdE <- jmvcore::resolveQuo(jmvcore::enquo(sdE))
+    if ( ! missing(nE)) nE <- jmvcore::resolveQuo(jmvcore::enquo(nE))
+    if ( ! missing(meanC)) meanC <- jmvcore::resolveQuo(jmvcore::enquo(meanC))
+    if ( ! missing(sdC)) sdC <- jmvcore::resolveQuo(jmvcore::enquo(sdC))
+    if ( ! missing(nC)) nC <- jmvcore::resolveQuo(jmvcore::enquo(nC))
     if (missing(data))
         data <- jmvcore::marshalData(
             parent.frame(),
-            `if`( ! missing(mean.e), mean.e, NULL),
-            `if`( ! missing(sd.e), sd.e, NULL),
-            `if`( ! missing(n.e), n.e, NULL),
-            `if`( ! missing(mean.c), mean.c, NULL),
-            `if`( ! missing(sd.c), sd.c, NULL),
-            `if`( ! missing(n.c), n.c, NULL),
-            `if`( ! missing(id), id, NULL))
+            `if`( ! missing(studyLabel), studyLabel, NULL),
+            `if`( ! missing(meanE), meanE, NULL),
+            `if`( ! missing(sdE), sdE, NULL),
+            `if`( ! missing(nE), nE, NULL),
+            `if`( ! missing(meanC), meanC, NULL),
+            `if`( ! missing(sdC), sdC, NULL),
+            `if`( ! missing(nC), nC, NULL))
 
 
     options <- mpcontOptions$new(
-        mean.e = mean.e,
-        sd.e = sd.e,
-        n.e = n.e,
-        mean.c = mean.c,
-        sd.c = sd.c,
-        n.c = n.c,
-        id = id,
+        studyLabel = studyLabel,
+        meanE = meanE,
+        sdE = sdE,
+        nE = nE,
+        meanC = meanC,
+        sdC = sdC,
+        nC = nC,
         sm = sm,
+        methodSmd = methodSmd,
         random = random,
         common = common,
-        label.e = label.e,
-        label.c = label.c,
+        methodTau = methodTau,
+        prediction = prediction,
+        confidenceLevel = confidenceLevel,
+        groupLabelE = groupLabelE,
+        groupLabelC = groupLabelC,
         LOO = LOO,
         OUT = OUT,
         baujat = baujat,

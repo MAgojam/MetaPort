@@ -1,97 +1,172 @@
 ---
-name:  mpcont
+name: mpcont
 title: Meta-analysis of continuous outcome data
 menuGroup: MetaPort
-version: '1.0.0'
-jas: '1.2'
+version: "1.0.0"
+jas: "1.2"
 
 options:
-    - name: data
-      type: Data
+  - name: data
+    type: Data
 
-    - name: mean.e
-      title: Mean in experimental group
-      type: Variable
+  - name: studyLabel
+    title: Study Labels
+    type: Variable
+    suggested:
+      - nominal
+      - ordinal
+      - id
 
-    - name: sd.e
-      title: Standard deviation in experimental group
-      type: Variable
+  - name: meanE
+    title: Mean (Experimental)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
 
-    - name: n.e
-      title: Total in experimental group
-      type: Variable
-      
-    - name: mean.c
-      title: Mean in control group
-      type: Variable
+  - name: sdE
+    title: SD (Experimental)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
 
-    - name: sd.c
-      title: Standard deviation in control group
-      type: Variable
-      
-    - name: n.c
-      title: Total in control group
-      type: Variable
-      
-    - name: id
-      title: study labels
-      type: Variable
-      
-    - name: sm
-      title: Summary measure
-      type: List
-      options:
-        - title: mean difference
-          name:  MD
-        - title: standardised mean difference
-          name:  SMD
-      default: MD
+  - name: nE
+    title: Sample Size (Experimental)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
 
-    - name: random
-      title: random effects meta-analysis
-      type: Bool
-      default: true
-      
-    - name: common
-      title: common effect meta-analysis
-      type: Bool
-      default: true
-    
-    - name: label.e
-      title: Label for experimental group
-      type: String
-      
-    - name: label.c
-      title: Label for control group
-      type: String
-      
-    - name: LOO
-      title: leave-one-out Analysis
-      type: Bool
-      default: false
-      
-    - name: OUT
-      title: Outliers Analysis
-      type: Bool
-      default: false
-      
-    - name: baujat
-      title: Baujat Plot
-      type: Bool
-      default: false
-      
-    - name: InfluenceCharacteristics
-      title: Influence Characteristics Plot
-      type: Bool
-      default: false
-      
-    - name: ForestEffectSize
-      title: Forest Plot Sorted By Effect Size
-      type: Bool
-      default: false
-      
-    - name: ForestI2
-      title: Forest Plot Sorted By between-study heterogeneity
-      type: Bool
-      default: false
-...
+  - name: meanC
+    title: Mean (Control)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
+
+  - name: sdC
+    title: SD (Control)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
+
+  - name: nC
+    title: Sample Size (Control)
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
+
+  - name: sm
+    title: Summary Measure
+    type: List
+    options:
+      - title: Mean Difference
+        name: md
+      - title: Standardised Mean Difference
+        name: smd
+      - title: Ratio of Means
+        name: rom
+    default: md
+
+  - name: methodSmd
+    title: SMD Method
+    type: List
+    options:
+      - title: Hedges' g
+        name: hedges
+      - title: Cohen's d
+        name: cohen
+      - title: Glass' delta
+        name: glass
+    default: hedges
+
+  - name: random
+    title: Random Effects
+    type: Bool
+    default: true
+
+  - name: common
+    title: Common Effect
+    type: Bool
+    default: true
+
+  - name: methodTau
+    title: Tau2 Estimator
+    type: List
+    options:
+      - title: Restricted Maximum-Likelihood (REML)
+        name: reml
+      - title: DerSimonian-Laird (DL)
+        name: dl
+      - title: Paule-Mandel (PM)
+        name: pm
+      - title: Maximum-Likelihood (ML)
+        name: ml
+      - title: Hunter-Schmidt (HS)
+        name: hs
+      - title: Sidik-Jonkman (SJ)
+        name: sj
+      - title: Hedges (HE)
+        name: he
+      - title: Empirical Bayes (EB)
+        name: eb
+    default: reml
+
+  - name: prediction
+    title: Prediction Interval
+    type: Bool
+    default: false
+
+  - name: confidenceLevel
+    title: Confidence Level
+    type: Number
+    default: 0.95
+
+  - name: groupLabelE
+    title: Label (Experimental)
+    type: String
+    default: Experimental
+
+  - name: groupLabelC
+    title: Label (Control)
+    type: String
+    default: Control
+
+  - name: LOO
+    title: leave-one-out Analysis
+    type: Bool
+    default: false
+
+  - name: OUT
+    title: Outliers Analysis
+    type: Bool
+    default: false
+
+  - name: baujat
+    title: Baujat Plot
+    type: Bool
+    default: false
+
+  - name: InfluenceCharacteristics
+    title: Influence Characteristics Plot
+    type: Bool
+    default: false
+
+  - name: ForestEffectSize
+    title: Forest Plot Sorted By Effect Size
+    type: Bool
+    default: false
+
+  - name: ForestI2
+    title: Forest Plot Sorted By between-study heterogeneity
+    type: Bool
+    default: false
