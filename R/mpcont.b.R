@@ -1,11 +1,31 @@
+# TODO
+# 1- check if we need this requireNamespace call, I think no
+# 2- Edit internal names and some options names to follow camelCase convention
+# 3- Search for solution to the problem of size of saving and not updating
+# dynamically with plot size, I doubt it is error from jamovi side
+# 4- Ask for avialability of adding dpi to image export
+# 5- We would need someone to check what other programs provide for meta
+# analysis to give them priority and imitate their GUI
+# 6- Check if we still need default widht and height in .r.yaml file but after
+# fixing save size problem
+# 7- How devices and warning work in jamovi ?
+
 mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
   R6::R6Class(
     "mpcontClass",
     inherit = mpcontBase,
+    active = list(
+      model = function() {
+        if (is.null(private$.model)) {
+          private$.model <- private$.computeModel()
+        }
+        private$.model
+      }
+    ),
     private = list(
-      .run = function() {
-        # 1. Check if analysis is possible (all required variables assigned)
-        # Check availability of names
+      .model = NULL,
+      .computeModel = function() {
+        # 1. Check availability of names
         if (
           is.null(self$options$meanE) ||
             is.null(self$options$sdE) ||
@@ -14,13 +34,11 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
             is.null(self$options$sdC) ||
             is.null(self$options$nC)
         ) {
-          return()
+          return(NULL)
         }
 
         # 2. Extract and Validate Data
         # converting to numeric to strip attributes (jmvcore::toNumeric)
-        # I think this is not needed may be it is defensive programming?
-        # TODO check more modules about this behaviuor 
         mean.e <- jmvcore::toNumeric(self$data[[self$options$meanE]])
         sd.e <- jmvcore::toNumeric(self$data[[self$options$sdE]])
         n.e <- jmvcore::toNumeric(self$data[[self$options$nE]])
@@ -65,12 +83,20 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
           label.c = label.c
         )
 
-        # End of my part I would be really glad if you can make the below part
-        # as new methods It is too disorganized to me and this is not the
-        # default way in R6
-        metamodel <- self$results$plot
-        metamodel$setState(OverallMeta)
-        self$results$text$setContent(OverallMeta)
+        OverallMeta
+      },
+
+      .run = function() {
+        if (is.null(self$model)) {
+          return(NULL)
+        }
+
+        self$results$text$setContent(summary(self$model))
+        private$.prepareForestPlot()
+
+        # End of my part, it would be good if we could clear .run() function
+        # and use separate methods/functions rather than listing all of them
+        # below
 
         # sensitivity analysis
         LOO <- self$options$LOO
@@ -81,14 +107,14 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         ForestI2 <- self$options$ForestI2
 
         if (LOO == TRUE) {
-          LOOResults <- meta::metainf(OverallMeta)
+          LOOResults <- meta::metainf(self$model)
           self$results$LOOText$setContent(LOOResults)
           LOOData <- self$results$LOOPlot
           LOOData$setState(LOOResults)
         }
 
         if (OUT == TRUE) {
-          OUTResults <- dmetar::find.outliers(OverallMeta)
+          OUTResults <- dmetar::find.outliers(self$model)
           self$results$OUTText$setContent(OUTResults)
           OUTData <- self$results$OUTPlot
           OUTData$setState(OUTResults)
@@ -100,7 +126,7 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
             ForestEffectSize == TRUE |
             ForestI2 == TRUE
         ) {
-          infResults <- dmetar::InfluenceAnalysis(OverallMeta)
+          infResults <- dmetar::InfluenceAnalysis(self$model)
           self$results$infText$setContent(infResults)
 
           if (baujat == TRUE) {
@@ -124,9 +150,41 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
           }
         }
       },
-      .plot = function(metamodel, ...) {
+      .prepareForestPlot = function() {
+        if (is.null(self$model)) {
+          return(NULL)
+        }
+
+        # Dynamic height calculation (Dry Run)
+        old_dev <- grDevices::dev.cur()
+        grDevices::pdf(file = NULL)
+
+        calculated_height <- tryCatch(
+          {
+            res <- suppressMessages(suppressWarnings(meta::forest(self$model)))
+            res$figheight$total_height * 72
+          },
+          finally = {
+            grDevices::dev.off()
+            if (old_dev > 1) grDevices::dev.set(old_dev)
+          }
+        )
+
+        self$results$plot$setSize(width = 800, height = calculated_height)
+
+        self$results$plot$setState(self$model)
+      },
+      .forestPlot = function(image, ...) {
+        if (is.null(image$state)) {
+          return(FALSE)
+        }
+
+        grid::grid.newpage()
+        grid::grid.rect(gp = grid::gpar(fill = "white", col = NA))
+
         meta::forest(
-          metamodel$state,
+          image$state,
+          new = FALSE,
           leftcols = c(
             "studlab",
             "mean.e",

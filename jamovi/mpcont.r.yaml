@@ -32,7 +32,7 @@ items:
       type: Image
       width:  800
       height: 1000
-      renderFun: .plot
+      renderFun: .forestPlot
       clearWith:
         - meanE
         - sdE

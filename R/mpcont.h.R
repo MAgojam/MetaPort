@@ -284,7 +284,7 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 title="Forest Plot",
                 width=800,
                 height=1000,
-                renderFun=".plot",
+                renderFun=".forestPlot",
                 clearWith=list(
                     "meanE",
                     "sdE",
