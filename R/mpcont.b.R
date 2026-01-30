@@ -145,7 +145,7 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
             ForestI2Data$setState(infResults)
           }
         }
-        if (self$options$metaRegressionEnabled) {
+        if (self$options$metaRegressionEnabled && is.null(self$results$meta_regression_text$state)) {
           if (is.null(self$options$MetaRegressionCovariate)) {
             jmvcore::reject("Please select a covariate for meta-regression!")
           }
