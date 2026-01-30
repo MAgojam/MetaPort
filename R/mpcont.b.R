@@ -26,17 +26,15 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
       .model = NULL,
       .computeModel = function() {
         # 1. Check availability of names
-        if (
-          is.null(self$options$meanE) ||
+        if (is.null(self$options$meanE) ||
             is.null(self$options$sdE) ||
             is.null(self$options$nE) ||
             is.null(self$options$meanC) ||
             is.null(self$options$sdC) ||
-            is.null(self$options$nC)
-        ) {
+            is.null(self$options$nC)) {
           return(NULL)
         }
-
+        
         # 2. Extract and Validate Data
         # converting to numeric to strip attributes (jmvcore::toNumeric)
         mean.e <- jmvcore::toNumeric(self$data[[self$options$meanE]])
@@ -45,13 +43,13 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         mean.c <- jmvcore::toNumeric(self$data[[self$options$meanC]])
         sd.c <- jmvcore::toNumeric(self$data[[self$options$sdC]])
         n.c <- jmvcore::toNumeric(self$data[[self$options$nC]])
-
+        
         # 3. Optional study labels
         studlab <- NULL
         if (!is.null(self$options$studyLabel)) {
           studlab <- self$data[[self$options$studyLabel]]
         }
-
+        
         # 4. Options
         label.e <- self$options$groupLabelE
         label.c <- self$options$groupLabelC
@@ -62,7 +60,7 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         common <- self$options$common
         prediction <- self$options$prediction
         level <- self$options$confidenceLevel
-
+        
         # Pass data directly
         OverallMeta <- meta::metacont(
           n.e = n.e,
@@ -82,22 +80,22 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
           label.e = label.e,
           label.c = label.c
         )
-
+        
         OverallMeta
       },
-
+      
       .run = function() {
         if (is.null(self$model)) {
           return(NULL)
         }
-
+        
         self$results$text$setContent(summary(self$model))
         private$.prepareForestPlot()
-
+        
         # End of my part, it would be good if we could clear .run() function
         # and use separate methods/functions rather than listing all of them
         # below
-
+        
         # sensitivity analysis
         LOO <- self$options$LOO
         OUT <- self$options$OUT
@@ -105,48 +103,59 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         InfluenceCharacteristics <- self$options$InfluenceCharacteristics
         ForestEffectSize <- self$options$ForestEffectSize
         ForestI2 <- self$options$ForestI2
-
+        
         if (LOO == TRUE) {
           LOOResults <- meta::metainf(self$model)
           self$results$LOOText$setContent(LOOResults)
           LOOData <- self$results$LOOPlot
           LOOData$setState(LOOResults)
         }
-
+        
         if (OUT == TRUE) {
           OUTResults <- dmetar::find.outliers(self$model)
           self$results$OUTText$setContent(OUTResults)
           OUTData <- self$results$OUTPlot
           OUTData$setState(OUTResults)
         }
-
-        if (
-          baujat == TRUE |
+        
+        if (baujat == TRUE |
             InfluenceCharacteristics == TRUE |
             ForestEffectSize == TRUE |
-            ForestI2 == TRUE
-        ) {
+            ForestI2 == TRUE) {
           infResults <- dmetar::InfluenceAnalysis(self$model)
           self$results$infText$setContent(infResults)
-
+          
           if (baujat == TRUE) {
             baujatData <- self$results$baujatPlot
             baujatData$setState(infResults)
           }
-
+          
           if (InfluenceCharacteristics == TRUE) {
             InfluenceCharacteristicsData <- self$results$infPlot
             InfluenceCharacteristicsData$setState(infResults)
           }
-
+          
           if (ForestEffectSize == TRUE) {
             ForestEffectSizeData <- self$results$ForestEffectSizePlot
             ForestEffectSizeData$setState(infResults)
           }
-
+          
           if (ForestI2 == TRUE) {
             ForestI2Data <- self$results$ForestI2Plot
             ForestI2Data$setState(infResults)
+          }
+        }
+        if (self$options$metaRegressionEnabled) {
+          if (is.null(self$options$MetaRegressionCovariate)) {
+            jmvcore::reject("Please select a covariate for meta-regression!")
+          }
+          else{
+            model <- self$model
+            model$data$covariate <- jmvcore::toNumeric(self$data[[self$options$MetaRegressionCovariate]])
+            meta_regression_results <- meta::metareg(model, ~ covariate)
+            self$results$meta_regression_text$setContent(meta_regression_results)
+            meta_regression_plot <- self$results$meta_regression_plot
+            meta_regression_plot$setState(meta_regression_results)
           }
         }
       },
@@ -154,46 +163,36 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         if (is.null(self$model)) {
           return(NULL)
         }
-
+        
         # Dynamic height calculation (Dry Run)
         old_dev <- grDevices::dev.cur()
         grDevices::pdf(file = NULL)
-
-        calculated_height <- tryCatch(
-          {
-            res <- suppressMessages(suppressWarnings(meta::forest(self$model)))
-            res$figheight$total_height * 72
-          },
-          finally = {
-            grDevices::dev.off()
-            if (old_dev > 1) grDevices::dev.set(old_dev)
-          }
-        )
-
+        
+        calculated_height <- tryCatch({
+          res <- suppressMessages(suppressWarnings(meta::forest(self$model)))
+          res$figheight$total_height * 72
+        }, finally = {
+          grDevices::dev.off()
+          if (old_dev > 1)
+            grDevices::dev.set(old_dev)
+        })
+        
         self$results$plot$setSize(width = 800, height = calculated_height)
-
+        
         self$results$plot$setState(self$model)
       },
       .forestPlot = function(image, ...) {
         if (is.null(image$state)) {
           return(FALSE)
         }
-
+        
         grid::grid.newpage()
         grid::grid.rect(gp = grid::gpar(fill = "white", col = NA))
-
+        
         meta::forest(
           image$state,
           new = FALSE,
-          leftcols = c(
-            "studlab",
-            "mean.e",
-            "sd.e",
-            "n.e",
-            "mean.c",
-            "sd.c",
-            "n.c"
-          ),
+          leftcols = c("studlab", "mean.e", "sd.e", "n.e", "mean.c", "sd.c", "n.c"),
           leftlabs = c("Study", "Mean", "SD", "Total", "Mean", "SD", "Total"),
           col.diamond = "black",
           col.subgroup = "gray30",
@@ -236,10 +235,7 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
       },
       .infPlot = function(InfluenceCharacteristicsData, ...) {
         if (self$options$InfluenceCharacteristics == TRUE) {
-          dmetar::plot.InfluenceAnalysis(
-            InfluenceCharacteristicsData$state,
-            "influence"
-          )
+          dmetar::plot.InfluenceAnalysis(InfluenceCharacteristicsData$state, "influence")
           TRUE
         } else {
           FALSE
@@ -260,6 +256,15 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         } else {
           FALSE
         }
+      },
+      .meta_reg_plot_func = function(image, ...) {
+        if (is.null(image$state)) {
+          return(FALSE)
+        }
+        
+        par(bg = "white")
+        meta::bubble(image$state, studlab = TRUE, xlab = self$options$MetaRegressionCovariate)
+        TRUE
       }
     )
   )

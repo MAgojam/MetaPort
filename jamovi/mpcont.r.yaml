@@ -74,7 +74,50 @@ items:
         - confidenceLevel
       refs:
         - metaPackage
-        
+    - name:  meta_regression_text
+      title: Meta-Regression Results
+      type:  Preformatted
+      visible: (metaRegressionEnabled)
+      clearWith:
+        - meanE
+        - sdE
+        - meanC
+        - sdC
+        - studyLabel
+        - sm
+        - methodTau
+        - methodSmd
+        - random
+        - common
+        - confidenceLevel
+        - MetaRegressionCovariate
+
+      refs:
+        - metaPackage
+
+    - name:  meta_regression_plot
+      title: Meta-Regression Plot
+      type:  Image 
+      width:  800
+      height: 1000
+      renderFun: .meta_reg_plot_func
+      visible: (metaRegressionEnabled)
+      clearWith:
+        - meanE
+        - sdE
+        - meanC
+        - sdC
+        - studyLabel
+        - sm
+        - methodTau
+        - methodSmd
+        - random
+        - common
+        - confidenceLevel
+        - MetaRegressionCovariate
+      refs:
+        - metaPackage
+
     - name:  LOOPlot
       title: leave-one-out Plot
       type:  Image

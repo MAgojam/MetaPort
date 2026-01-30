@@ -57,6 +57,13 @@ children:
             name: nC
             maxItemCount: 1
             isTarget: true
+      - type: TargetLayoutBox
+        label: Meta-Regression Covariate
+        children:
+          - type: VariablesListBox
+            name: MetaRegressionCovariate
+            maxItemCount: 1
+            isTarget: true
   - type: LayoutBox
     margin: large
     children:
@@ -105,6 +112,8 @@ children:
   - type: LayoutBox
     margin: large
     children:
+      - type: CheckBox
+        name: metaRegressionEnabled
       - type: CheckBox
         name: LOO
       - type: CheckBox

@@ -65,6 +65,14 @@ options:
     permitted:
       - numeric
 
+  - name: MetaRegressionCovariate
+    title: Meta-Regression Covariate
+    type: Variable
+    suggested:
+      - continuous
+    permitted:
+      - numeric
+
   - name: sm
     title: Summary Measure
     type: List
@@ -140,6 +148,11 @@ options:
     title: Label (Control)
     type: String
     default: Control
+
+  - name: metaRegressionEnabled
+    title: Conduct Meta-Regression
+    type: Bool
+    default: false
 
   - name: LOO
     title: leave-one-out Analysis

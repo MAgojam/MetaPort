@@ -13,6 +13,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             meanC = NULL,
             sdC = NULL,
             nC = NULL,
+            MetaRegressionCovariate = NULL,
             sm = "md",
             methodSmd = "hedges",
             random = TRUE,
@@ -22,6 +23,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             confidenceLevel = 0.95,
             groupLabelE = "Experimental",
             groupLabelC = "Control",
+            metaRegressionEnabled = FALSE,
             LOO = FALSE,
             OUT = FALSE,
             baujat = FALSE,
@@ -84,6 +86,13 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "continuous"),
                 permitted=list(
                     "numeric"))
+            private$..MetaRegressionCovariate <- jmvcore::OptionVariable$new(
+                "MetaRegressionCovariate",
+                MetaRegressionCovariate,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
             private$..sm <- jmvcore::OptionList$new(
                 "sm",
                 sm,
@@ -137,6 +146,10 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "groupLabelC",
                 groupLabelC,
                 default="Control")
+            private$..metaRegressionEnabled <- jmvcore::OptionBool$new(
+                "metaRegressionEnabled",
+                metaRegressionEnabled,
+                default=FALSE)
             private$..LOO <- jmvcore::OptionBool$new(
                 "LOO",
                 LOO,
@@ -169,6 +182,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..meanC)
             self$.addOption(private$..sdC)
             self$.addOption(private$..nC)
+            self$.addOption(private$..MetaRegressionCovariate)
             self$.addOption(private$..sm)
             self$.addOption(private$..methodSmd)
             self$.addOption(private$..random)
@@ -178,6 +192,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..confidenceLevel)
             self$.addOption(private$..groupLabelE)
             self$.addOption(private$..groupLabelC)
+            self$.addOption(private$..metaRegressionEnabled)
             self$.addOption(private$..LOO)
             self$.addOption(private$..OUT)
             self$.addOption(private$..baujat)
@@ -193,6 +208,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         meanC = function() private$..meanC$value,
         sdC = function() private$..sdC$value,
         nC = function() private$..nC$value,
+        MetaRegressionCovariate = function() private$..MetaRegressionCovariate$value,
         sm = function() private$..sm$value,
         methodSmd = function() private$..methodSmd$value,
         random = function() private$..random$value,
@@ -202,6 +218,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         confidenceLevel = function() private$..confidenceLevel$value,
         groupLabelE = function() private$..groupLabelE$value,
         groupLabelC = function() private$..groupLabelC$value,
+        metaRegressionEnabled = function() private$..metaRegressionEnabled$value,
         LOO = function() private$..LOO$value,
         OUT = function() private$..OUT$value,
         baujat = function() private$..baujat$value,
@@ -216,6 +233,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..meanC = NA,
         ..sdC = NA,
         ..nC = NA,
+        ..MetaRegressionCovariate = NA,
         ..sm = NA,
         ..methodSmd = NA,
         ..random = NA,
@@ -225,6 +243,7 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..confidenceLevel = NA,
         ..groupLabelE = NA,
         ..groupLabelC = NA,
+        ..metaRegressionEnabled = NA,
         ..LOO = NA,
         ..OUT = NA,
         ..baujat = NA,
@@ -240,6 +259,8 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         text = function() private$.items[["text"]],
         plot = function() private$.items[["plot"]],
         LOOText = function() private$.items[["LOOText"]],
+        meta_regression_text = function() private$.items[["meta_regression_text"]],
+        meta_regression_plot = function() private$.items[["meta_regression_plot"]],
         LOOPlot = function() private$.items[["LOOPlot"]],
         OUTText = function() private$.items[["OUTText"]],
         OUTPlot = function() private$.items[["OUTPlot"]],
@@ -324,6 +345,49 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "random",
                     "common",
                     "confidenceLevel"),
+                refs=list(
+                    "metaPackage")))
+            self$add(jmvcore::Preformatted$new(
+                options=options,
+                name="meta_regression_text",
+                title="Meta-Regression Results",
+                visible="(metaRegressionEnabled)",
+                clearWith=list(
+                    "meanE",
+                    "sdE",
+                    "meanC",
+                    "sdC",
+                    "studyLabel",
+                    "sm",
+                    "methodTau",
+                    "methodSmd",
+                    "random",
+                    "common",
+                    "confidenceLevel",
+                    "MetaRegressionCovariate"),
+                refs=list(
+                    "metaPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="meta_regression_plot",
+                title="Meta-Regression Plot",
+                width=800,
+                height=1000,
+                renderFun=".meta_reg_plot_func",
+                visible="(metaRegressionEnabled)",
+                clearWith=list(
+                    "meanE",
+                    "sdE",
+                    "meanC",
+                    "sdC",
+                    "studyLabel",
+                    "sm",
+                    "methodTau",
+                    "methodSmd",
+                    "random",
+                    "common",
+                    "confidenceLevel",
+                    "MetaRegressionCovariate"),
                 refs=list(
                     "metaPackage")))
             self$add(jmvcore::Image$new(
@@ -555,6 +619,7 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param meanC .
 #' @param sdC .
 #' @param nC .
+#' @param MetaRegressionCovariate .
 #' @param sm .
 #' @param methodSmd .
 #' @param random .
@@ -564,6 +629,7 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param confidenceLevel .
 #' @param groupLabelE .
 #' @param groupLabelC .
+#' @param metaRegressionEnabled .
 #' @param LOO .
 #' @param OUT .
 #' @param baujat .
@@ -575,6 +641,8 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$plot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$LOOText} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$meta_regression_text} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$meta_regression_plot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$LOOPlot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$OUTText} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$OUTPlot} \tab \tab \tab \tab \tab an image \cr
@@ -595,6 +663,7 @@ mpcont <- function(
     meanC,
     sdC,
     nC,
+    MetaRegressionCovariate,
     sm = "md",
     methodSmd = "hedges",
     random = TRUE,
@@ -604,6 +673,7 @@ mpcont <- function(
     confidenceLevel = 0.95,
     groupLabelE = "Experimental",
     groupLabelC = "Control",
+    metaRegressionEnabled = FALSE,
     LOO = FALSE,
     OUT = FALSE,
     baujat = FALSE,
@@ -621,6 +691,7 @@ mpcont <- function(
     if ( ! missing(meanC)) meanC <- jmvcore::resolveQuo(jmvcore::enquo(meanC))
     if ( ! missing(sdC)) sdC <- jmvcore::resolveQuo(jmvcore::enquo(sdC))
     if ( ! missing(nC)) nC <- jmvcore::resolveQuo(jmvcore::enquo(nC))
+    if ( ! missing(MetaRegressionCovariate)) MetaRegressionCovariate <- jmvcore::resolveQuo(jmvcore::enquo(MetaRegressionCovariate))
     if (missing(data))
         data <- jmvcore::marshalData(
             parent.frame(),
@@ -630,7 +701,8 @@ mpcont <- function(
             `if`( ! missing(nE), nE, NULL),
             `if`( ! missing(meanC), meanC, NULL),
             `if`( ! missing(sdC), sdC, NULL),
-            `if`( ! missing(nC), nC, NULL))
+            `if`( ! missing(nC), nC, NULL),
+            `if`( ! missing(MetaRegressionCovariate), MetaRegressionCovariate, NULL))
 
 
     options <- mpcontOptions$new(
@@ -641,6 +713,7 @@ mpcont <- function(
         meanC = meanC,
         sdC = sdC,
         nC = nC,
+        MetaRegressionCovariate = MetaRegressionCovariate,
         sm = sm,
         methodSmd = methodSmd,
         random = random,
@@ -650,6 +723,7 @@ mpcont <- function(
         confidenceLevel = confidenceLevel,
         groupLabelE = groupLabelE,
         groupLabelC = groupLabelC,
+        metaRegressionEnabled = metaRegressionEnabled,
         LOO = LOO,
         OUT = OUT,
         baujat = baujat,
