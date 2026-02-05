@@ -96,13 +96,10 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         # and use separate methods/functions rather than listing all of them
         # below
         
+        
+        
         # sensitivity analysis
         LOO <- self$options$LOO
-        OUT <- self$options$OUT
-        baujat <- self$options$baujat
-        InfluenceCharacteristics <- self$options$InfluenceCharacteristics
-        ForestEffectSize <- self$options$ForestEffectSize
-        ForestI2 <- self$options$ForestI2
         
         if (LOO == TRUE) {
           LOOResults <- meta::metainf(self$model)
@@ -111,40 +108,9 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
           LOOData$setState(LOOResults)
         }
         
-        if (OUT == TRUE) {
-          OUTResults <- dmetar::find.outliers(self$model)
-          self$results$OUTText$setContent(OUTResults)
-          OUTData <- self$results$OUTPlot
-          OUTData$setState(OUTResults)
-        }
+      
         
-        if (baujat == TRUE |
-            InfluenceCharacteristics == TRUE |
-            ForestEffectSize == TRUE |
-            ForestI2 == TRUE) {
-          infResults <- dmetar::InfluenceAnalysis(self$model)
-          self$results$infText$setContent(infResults)
-          
-          if (baujat == TRUE) {
-            baujatData <- self$results$baujatPlot
-            baujatData$setState(infResults)
-          }
-          
-          if (InfluenceCharacteristics == TRUE) {
-            InfluenceCharacteristicsData <- self$results$infPlot
-            InfluenceCharacteristicsData$setState(infResults)
-          }
-          
-          if (ForestEffectSize == TRUE) {
-            ForestEffectSizeData <- self$results$ForestEffectSizePlot
-            ForestEffectSizeData$setState(infResults)
-          }
-          
-          if (ForestI2 == TRUE) {
-            ForestI2Data <- self$results$ForestI2Plot
-            ForestI2Data$setState(infResults)
-          }
-        }
+        
         if (self$options$metaRegressionEnabled && is.null(self$results$meta_regression_text$state)) {
           if (is.null(self$options$MetaRegressionCovariate)) {
             jmvcore::reject("Please select a covariate for meta-regression!")
@@ -202,56 +168,15 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
       },
       .LOOPlot = function(LOOData, ...) {
         if (self$options$LOO == TRUE) {
-          meta::forest(
+          
+         meta::forest(
             LOOData$state,
             rightcols = c("effect", "ci", "tau2", "I2"),
             col.diamond = "black",
             col.subgroup = "gray30"
           )
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-      .OUTPlot = function(OUTData, ...) {
-        if (self$options$OUT == TRUE) {
-          dmetar::forest.find.outliers(
-            OUTData$state,
-            col.diamond = "black",
-            col.subgroup = "gray30"
-          )
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-      .baujatPlot = function(baujatData, ...) {
-        if (self$options$baujat == TRUE) {
-          dmetar::plot.InfluenceAnalysis(baujatData$state, "baujat")
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-      .infPlot = function(InfluenceCharacteristicsData, ...) {
-        if (self$options$InfluenceCharacteristics == TRUE) {
-          dmetar::plot.InfluenceAnalysis(InfluenceCharacteristicsData$state, "influence")
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-      .ForestEffectSizePlot = function(ForestEffectSizeData, ...) {
-        if (self$options$ForestEffectSize == TRUE) {
-          dmetar::plot.InfluenceAnalysis(ForestEffectSizeData$state, "ES")
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-      .ForestI2Plot = function(ForestI2Data, ...) {
-        if (self$options$ForestI2 == TRUE) {
-          dmetar::plot.InfluenceAnalysis(ForestI2Data$state, "I2")
+         
+          
           TRUE
         } else {
           FALSE

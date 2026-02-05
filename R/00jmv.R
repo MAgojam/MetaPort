@@ -18,10 +18,4 @@
         `publisher`="Journal of Statistical Software", 
         `volume`=36, 
         `pages`="1-48", 
-        `url`="https://http://doi.org/10.18637/jss.v036.i03"), 
-    `dmetarPackage`=list(
-        `type`="software", 
-        `author`="Mathias Harrer and Pim Cuijpers and Toshi Furukawa and David Daniel Ebert", 
-        `year`=2019, 
-        `title`="dmetar: Companion R Package For The Guide Doing Meta-Analysis in R", 
-        `url`="http://dmetar.protectlab.org"))
+        `url`="https://http://doi.org/10.18637/jss.v036.i03"))

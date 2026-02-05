@@ -56,6 +56,7 @@ items:
     - name:  LOOText
       title: leave-one-out Analysis
       type:  Preformatted
+      visible: (LOO)
       clearWith:
         - meanE
         - sdE
@@ -74,6 +75,33 @@ items:
         - confidenceLevel
       refs:
         - metaPackage
+
+    - name:  LOOPlot
+      title: leave-one-out Plot
+      type:  Image
+      width:  800
+      height: 1000
+      renderFun: .LOOPlot
+      visible: (LOO)
+      clearWith:
+        - meanE
+        - sdE
+        - nE
+        - meanC
+        - sdC
+        - nC
+        - studyLabel
+        - groupLabelE
+        - groupLabelC
+        - sm
+        - methodTau
+        - methodSmd
+        - random
+        - common
+        - confidenceLevel
+      refs:
+        - metaPackage
+
     - name:  meta_regression_text
       title: Meta-Regression Results
       type:  Preformatted
@@ -118,199 +146,4 @@ items:
       refs:
         - metaPackage
 
-    - name:  LOOPlot
-      title: leave-one-out Plot
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .LOOPlot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - metaPackage
-        
-    - name:  OUTText
-      title: Outliers Analysis
-      type:  Preformatted
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-        - metaPackage
-        
-    - name:  OUTPlot
-      title: Outliers Plot
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .OUTPlot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-        - metaPackage
-
-    - name:  infText
-      title: Influence Analysis
-      type:  Preformatted
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-        
-    - name:  baujatPlot
-      title: baujat Plot
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .baujatPlot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-
-    - name:  infPlot
-      title: Influence Characteristics Plot
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .infPlot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-
-    - name:  ForestEffectSizePlot
-      title: Forest Plot Sorted By Effect Size
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .ForestEffectSizePlot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
-
-    - name:  ForestI2Plot
-      title: Forest Plot Sorted By between-study heterogeneity
-      type:  Image
-      width:  800
-      height: 1000
-      renderFun: .ForestI2Plot
-      clearWith:
-        - meanE
-        - sdE
-        - nE
-        - meanC
-        - sdC
-        - nC
-        - studyLabel
-        - groupLabelE
-        - groupLabelC
-        - sm
-        - methodTau
-        - methodSmd
-        - random
-        - common
-        - confidenceLevel
-      refs:
-        - dmetarPackage
 ...

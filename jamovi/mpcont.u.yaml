@@ -113,16 +113,6 @@ children:
     margin: large
     children:
       - type: CheckBox
-        name: metaRegressionEnabled
-      - type: CheckBox
         name: LOO
       - type: CheckBox
-        name: OUT
-      - type: CheckBox
-        name: baujat
-      - type: CheckBox
-        name: InfluenceCharacteristics
-      - type: CheckBox
-        name: ForestEffectSize
-      - type: CheckBox
-        name: ForestI2
+        name: metaRegressionEnabled

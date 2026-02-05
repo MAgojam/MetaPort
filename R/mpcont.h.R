@@ -23,13 +23,8 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             confidenceLevel = 0.95,
             groupLabelE = "Experimental",
             groupLabelC = "Control",
-            metaRegressionEnabled = FALSE,
             LOO = FALSE,
-            OUT = FALSE,
-            baujat = FALSE,
-            InfluenceCharacteristics = FALSE,
-            ForestEffectSize = FALSE,
-            ForestI2 = FALSE, ...) {
+            metaRegressionEnabled = FALSE, ...) {
 
             super$initialize(
                 package="MetaPort",
@@ -146,33 +141,13 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "groupLabelC",
                 groupLabelC,
                 default="Control")
-            private$..metaRegressionEnabled <- jmvcore::OptionBool$new(
-                "metaRegressionEnabled",
-                metaRegressionEnabled,
-                default=FALSE)
             private$..LOO <- jmvcore::OptionBool$new(
                 "LOO",
                 LOO,
                 default=FALSE)
-            private$..OUT <- jmvcore::OptionBool$new(
-                "OUT",
-                OUT,
-                default=FALSE)
-            private$..baujat <- jmvcore::OptionBool$new(
-                "baujat",
-                baujat,
-                default=FALSE)
-            private$..InfluenceCharacteristics <- jmvcore::OptionBool$new(
-                "InfluenceCharacteristics",
-                InfluenceCharacteristics,
-                default=FALSE)
-            private$..ForestEffectSize <- jmvcore::OptionBool$new(
-                "ForestEffectSize",
-                ForestEffectSize,
-                default=FALSE)
-            private$..ForestI2 <- jmvcore::OptionBool$new(
-                "ForestI2",
-                ForestI2,
+            private$..metaRegressionEnabled <- jmvcore::OptionBool$new(
+                "metaRegressionEnabled",
+                metaRegressionEnabled,
                 default=FALSE)
 
             self$.addOption(private$..studyLabel)
@@ -192,13 +167,8 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..confidenceLevel)
             self$.addOption(private$..groupLabelE)
             self$.addOption(private$..groupLabelC)
-            self$.addOption(private$..metaRegressionEnabled)
             self$.addOption(private$..LOO)
-            self$.addOption(private$..OUT)
-            self$.addOption(private$..baujat)
-            self$.addOption(private$..InfluenceCharacteristics)
-            self$.addOption(private$..ForestEffectSize)
-            self$.addOption(private$..ForestI2)
+            self$.addOption(private$..metaRegressionEnabled)
         }),
     active = list(
         studyLabel = function() private$..studyLabel$value,
@@ -218,13 +188,8 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         confidenceLevel = function() private$..confidenceLevel$value,
         groupLabelE = function() private$..groupLabelE$value,
         groupLabelC = function() private$..groupLabelC$value,
-        metaRegressionEnabled = function() private$..metaRegressionEnabled$value,
         LOO = function() private$..LOO$value,
-        OUT = function() private$..OUT$value,
-        baujat = function() private$..baujat$value,
-        InfluenceCharacteristics = function() private$..InfluenceCharacteristics$value,
-        ForestEffectSize = function() private$..ForestEffectSize$value,
-        ForestI2 = function() private$..ForestI2$value),
+        metaRegressionEnabled = function() private$..metaRegressionEnabled$value),
     private = list(
         ..studyLabel = NA,
         ..meanE = NA,
@@ -243,13 +208,8 @@ mpcontOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..confidenceLevel = NA,
         ..groupLabelE = NA,
         ..groupLabelC = NA,
-        ..metaRegressionEnabled = NA,
         ..LOO = NA,
-        ..OUT = NA,
-        ..baujat = NA,
-        ..InfluenceCharacteristics = NA,
-        ..ForestEffectSize = NA,
-        ..ForestI2 = NA)
+        ..metaRegressionEnabled = NA)
 )
 
 mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
@@ -259,16 +219,9 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         text = function() private$.items[["text"]],
         plot = function() private$.items[["plot"]],
         LOOText = function() private$.items[["LOOText"]],
-        meta_regression_text = function() private$.items[["meta_regression_text"]],
-        meta_regression_plot = function() private$.items[["meta_regression_plot"]],
         LOOPlot = function() private$.items[["LOOPlot"]],
-        OUTText = function() private$.items[["OUTText"]],
-        OUTPlot = function() private$.items[["OUTPlot"]],
-        infText = function() private$.items[["infText"]],
-        baujatPlot = function() private$.items[["baujatPlot"]],
-        infPlot = function() private$.items[["infPlot"]],
-        ForestEffectSizePlot = function() private$.items[["ForestEffectSizePlot"]],
-        ForestI2Plot = function() private$.items[["ForestI2Plot"]]),
+        meta_regression_text = function() private$.items[["meta_regression_text"]],
+        meta_regression_plot = function() private$.items[["meta_regression_plot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -329,6 +282,33 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=options,
                 name="LOOText",
                 title="leave-one-out Analysis",
+                visible="(LOO)",
+                clearWith=list(
+                    "meanE",
+                    "sdE",
+                    "nE",
+                    "meanC",
+                    "sdC",
+                    "nC",
+                    "studyLabel",
+                    "groupLabelE",
+                    "groupLabelC",
+                    "sm",
+                    "methodTau",
+                    "methodSmd",
+                    "random",
+                    "common",
+                    "confidenceLevel"),
+                refs=list(
+                    "metaPackage")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="LOOPlot",
+                title="leave-one-out Plot",
+                width=800,
+                height=1000,
+                renderFun=".LOOPlot",
+                visible="(LOO)",
                 clearWith=list(
                     "meanE",
                     "sdE",
@@ -371,8 +351,8 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=options,
                 name="meta_regression_plot",
                 title="Meta-Regression Plot",
-                width=800,
-                height=1000,
+                width=700,
+                height=500,
                 renderFun=".meta_reg_plot_func",
                 visible="(metaRegressionEnabled)",
                 clearWith=list(
@@ -389,203 +369,7 @@ mpcontResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "confidenceLevel",
                     "MetaRegressionCovariate"),
                 refs=list(
-                    "metaPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="LOOPlot",
-                title="leave-one-out Plot",
-                width=800,
-                height=1000,
-                renderFun=".LOOPlot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "metaPackage")))
-            self$add(jmvcore::Preformatted$new(
-                options=options,
-                name="OUTText",
-                title="Outliers Analysis",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage",
-                    "metaPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="OUTPlot",
-                title="Outliers Plot",
-                width=800,
-                height=1000,
-                renderFun=".OUTPlot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage",
-                    "metaPackage")))
-            self$add(jmvcore::Preformatted$new(
-                options=options,
-                name="infText",
-                title="Influence Analysis",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="baujatPlot",
-                title="baujat Plot",
-                width=800,
-                height=1000,
-                renderFun=".baujatPlot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="infPlot",
-                title="Influence Characteristics Plot",
-                width=800,
-                height=1000,
-                renderFun=".infPlot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="ForestEffectSizePlot",
-                title="Forest Plot Sorted By Effect Size",
-                width=800,
-                height=1000,
-                renderFun=".ForestEffectSizePlot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="ForestI2Plot",
-                title="Forest Plot Sorted By between-study heterogeneity",
-                width=800,
-                height=1000,
-                renderFun=".ForestI2Plot",
-                clearWith=list(
-                    "meanE",
-                    "sdE",
-                    "nE",
-                    "meanC",
-                    "sdC",
-                    "nC",
-                    "studyLabel",
-                    "groupLabelE",
-                    "groupLabelC",
-                    "sm",
-                    "methodTau",
-                    "methodSmd",
-                    "random",
-                    "common",
-                    "confidenceLevel"),
-                refs=list(
-                    "dmetarPackage")))}))
+                    "metaPackage")))}))
 
 mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "mpcontBase",
@@ -629,28 +413,16 @@ mpcontBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param confidenceLevel .
 #' @param groupLabelE .
 #' @param groupLabelC .
-#' @param metaRegressionEnabled .
 #' @param LOO .
-#' @param OUT .
-#' @param baujat .
-#' @param InfluenceCharacteristics .
-#' @param ForestEffectSize .
-#' @param ForestI2 .
+#' @param metaRegressionEnabled .
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$plot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$LOOText} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$LOOPlot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$meta_regression_text} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$meta_regression_plot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$LOOPlot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$OUTText} \tab \tab \tab \tab \tab a preformatted \cr
-#'   \code{results$OUTPlot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$infText} \tab \tab \tab \tab \tab a preformatted \cr
-#'   \code{results$baujatPlot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$infPlot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$ForestEffectSizePlot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$ForestI2Plot} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' @export
@@ -673,13 +445,8 @@ mpcont <- function(
     confidenceLevel = 0.95,
     groupLabelE = "Experimental",
     groupLabelC = "Control",
-    metaRegressionEnabled = FALSE,
     LOO = FALSE,
-    OUT = FALSE,
-    baujat = FALSE,
-    InfluenceCharacteristics = FALSE,
-    ForestEffectSize = FALSE,
-    ForestI2 = FALSE) {
+    metaRegressionEnabled = FALSE) {
 
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("mpcont requires jmvcore to be installed (restart may be required)")
@@ -723,13 +490,8 @@ mpcont <- function(
         confidenceLevel = confidenceLevel,
         groupLabelE = groupLabelE,
         groupLabelC = groupLabelC,
-        metaRegressionEnabled = metaRegressionEnabled,
         LOO = LOO,
-        OUT = OUT,
-        baujat = baujat,
-        InfluenceCharacteristics = InfluenceCharacteristics,
-        ForestEffectSize = ForestEffectSize,
-        ForestI2 = ForestI2)
+        metaRegressionEnabled = metaRegressionEnabled)
 
     analysis <- mpcontClass$new(
         options = options,
