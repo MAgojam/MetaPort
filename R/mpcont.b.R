@@ -124,6 +124,8 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
             meta_regression_plot$setState(meta_regression_results)
           }
         }
+        
+        
       },
       .prepareForestPlot = function() {
         if (is.null(self$model)) {
@@ -168,15 +170,12 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
       },
       .LOOPlot = function(LOOData, ...) {
         if (self$options$LOO == TRUE) {
-          
-         meta::forest(
+          meta::forest(
             LOOData$state,
             rightcols = c("effect", "ci", "tau2", "I2"),
             col.diamond = "black",
             col.subgroup = "gray30"
           )
-         
-          
           TRUE
         } else {
           FALSE

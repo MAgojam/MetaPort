@@ -73,6 +73,13 @@ options:
     permitted:
       - numeric
 
+  - name: subgroupCovariate
+    title: Subgroup Covariate
+    type: Variable
+    suggested:
+      - nominal
+      - ordinal
+
   - name: sm
     title: Summary Measure
     type: List
@@ -155,7 +162,12 @@ options:
     default: false
 
   - name: metaRegressionEnabled
-    title: Conduct Meta-Regression
+    title: Meta-Regression
+    type: Bool
+    default: false
+
+ - name: subgroupEnabled
+    title: Subgroup Analysis
     type: Bool
     default: false
 

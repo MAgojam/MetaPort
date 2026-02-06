@@ -102,6 +102,50 @@ items:
       refs:
         - metaPackage
 
+    - name:  subgroup_text
+      title: Subgroup Results
+      type:  Preformatted
+      visible: (subgroupEnabled)
+      clearWith:
+        - meanE
+        - sdE
+        - meanC
+        - sdC
+        - studyLabel
+        - sm
+        - methodTau
+        - methodSmd
+        - random
+        - common
+        - confidenceLevel
+        - subgroupCovariate
+
+      refs:
+        - metaPackage
+
+    - name:  subgroup_plot
+      title: Subgroup Plot
+      type:  Image 
+      width:  700
+      height: 500
+      renderFun: .subgroup_plot_func
+      visible: (subgroupEnabled)
+      clearWith:
+        - meanE
+        - sdE
+        - meanC
+        - sdC
+        - studyLabel
+        - sm
+        - methodTau
+        - methodSmd
+        - random
+        - common
+        - confidenceLevel
+        - subgroupCovariate
+      refs:
+        - metaPackage
+
     - name:  meta_regression_text
       title: Meta-Regression Results
       type:  Preformatted
