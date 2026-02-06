@@ -117,6 +117,62 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
 
         private$.prepareLOOPlot()
         
+        if (self$options$subgroupEnabled){
+          if (is.null(self$options$subgroupCovariate)) {
+            jmvcore::reject("Please select a covariate for Subgroup analysis!")
+          } else {
+            mean.e <- jmvcore::toNumeric(self$data[[self$options$meanE]])
+            sd.e <- jmvcore::toNumeric(self$data[[self$options$sdE]])
+            n.e <- jmvcore::toNumeric(self$data[[self$options$nE]])
+            mean.c <- jmvcore::toNumeric(self$data[[self$options$meanC]])
+            sd.c <- jmvcore::toNumeric(self$data[[self$options$sdC]])
+            n.c <- jmvcore::toNumeric(self$data[[self$options$nC]])
+            label.e <- self$options$groupLabelE
+            label.c <- self$options$groupLabelC
+            sm <- self$options$sm
+            method.tau <- self$options$methodTau
+            method.smd <- self$options$methodSmd
+            random <- self$options$random
+            common <- self$options$common
+            prediction <- self$options$prediction
+            level <- self$options$confidenceLevel
+            subCovariate <- self$options$subgroupCovariate
+            
+            studlab <- NULL
+            if (!is.null(self$options$studyLabel)) {
+              studlab <- self$data[[self$options$studyLabel]]
+            }
+            
+            subgroup_results <- meta::metacont(
+              n.e = n.e,
+              mean.e = mean.e,
+              sd.e = sd.e,
+              n.c = n.c,
+              mean.c = mean.c,
+              sd.c = sd.c,
+              studlab = studlab,
+              sm = sm,
+              method.tau = method.tau,
+              method.smd = method.smd,
+              common = common,
+              random = random,
+              prediction = prediction,
+              level.ma = level,
+              label.e = label.e,
+              label.c = label.c,
+              byvar = subCovariate
+            )
+            
+            
+            self$results$subgroup_text$setContent(
+              subgroup_results
+            )
+            subgroup_plot <- self$results$subgroup_plot
+            subgroup_plot$setState(subgroup_results)
+          }
+        }
+        
+        
         if (
           self$options$metaRegressionEnabled &&
             is.null(self$results$meta_regression_text$state)
@@ -203,22 +259,6 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
         
         TRUE
       },
-<<<<<<< HEAD
-      .LOOPlot = function(LOOData, ...) {
-        if (self$options$LOO == TRUE) {
-          meta::forest(
-            LOOData$state,
-            rightcols = c("effect", "ci", "tau2", "I2"),
-            col.diamond = "black",
-            col.subgroup = "gray30"
-          )
-          TRUE
-        } else {
-          FALSE
-        }
-      },
-=======
->>>>>>> 12bf8c9208e0597f37c6b62a9fd110fdcd682560
       .meta_reg_plot_func = function(image, ...) {
         if (is.null(image$state)) {
           return(FALSE)
@@ -231,7 +271,21 @@ mpcontClass <- if (requireNamespace('jmvcore', quietly = TRUE)) {
           xlab = self$options$MetaRegressionCovariate
         )
         TRUE
+      },
+      .subgroup_plot_func = function(image, ...) {
+        if (is.null(image$state)) {
+          return(FALSE)
+        }
+        
+        par(bg = "white")
+        forest(image$state,
+               leftcols = c("studlab", "mean.e", "sd.e", "n.e", "mean.c", "sd.c", "n.c"),
+               leftlabs = c("Study", "Mean", "SD", "Total", "Mean", "SD", "Total"),
+               col.diamond = "black",col.subgroup ="gray30",
+               digits.sd = 2)
+        TRUE
       }
+      
     )
   )
 }
